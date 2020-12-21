@@ -22,7 +22,7 @@ def submit_sell_order(ticker, shares):
     #print('SELL')
     api.submit_order(
         symbol = ticker,
-        qty = shares,
+        qty = shares, 
         side = 'sell',
         type = 'market',
         time_in_force = 'gtc'
