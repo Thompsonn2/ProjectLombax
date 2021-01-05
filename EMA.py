@@ -3,48 +3,69 @@ import pandas_datareader as web
 import pandas as pd
 import datetime
 
-start = datetime.datetime(2018, 1, 1)
-end = datetime.datetime(2020, 1, 1)
+def getEMA(csv_name):
 
-API_KEY = '8YUCTMX2NCJUI70T'
+    pricedata = pd.read_csv(csv_name)
 
-ticker = 'AAPL'
+    acprices = pricedata.loc[:,'adjusted close']
+    dates = pricedata.loc[:, 'Unnamed: 0']
+    #print(acprices)
+    #print(dates)
+    
 
-test = web.DataReader(ticker, 'av-daily-adjusted', start, end, api_key = API_KEY)
-#print(test)
+    acprices = acprices.to_list()
+    dates = dates.to_list()
+    #print(acprices)
+    #print(dates)
 
-csv_name = ticker + '.csv'
+    strt = 0
+    end = 12
+    emalist = []
 
-test.to_csv(csv_name)
+    #len(acprices)
+    while end <= len(acprices):
 
-pricedata = pd.read_csv(csv_name)
+        #12 Day EMA
 
-acprices = pricedata.loc[:,'adjusted close']
-#print(acprices)
+        emalng = 12
+        acptotal = 0
 
-#12 Day EMA
+        #12 Day SMA (intial EMA)
+        for i in range(strt, end):
+           acptotal = acprices[i] + acptotal
 
-emalng = 12
-acptotal = 0
+        sma = acptotal / emalng
 
-#12 Day SMA (intial EMA)
-for i in range(emalng):
-    acptotal = acprices[i] + acptotal
+        #Multiplier
+        multi = 2 / (acptotal + 1)
 
-sma = acptotal / emalng
-print(sma)
+        #Closing Price
+        acp = acprices[end - 1]
 
-#Multiplier
-multi = 2 / (acptotal + 1)
-print(multi)
+        #EMA
+        if strt == 0:
+            ema = ((acp - sma) * multi) + sma
+            #print(ema, "\t\t", strt, end)
+        elif strt > 0:
+            prevema = emalist[-1]
+            ema = ((acp - prevema) * multi) + prevema
+            #print("12 day Sum: ", acptotal)
+            #print("Multiplier: ", multi)
+            #print("Adj Close: ", acp)
+            #print("Previous EMA: ", prevema)
+            #print(ema, "\t\t", strt, end)
 
-#Closing Price
-acp = acprices[emalng - 1]
-print(acp)
+        emalist.append(ema)
+        strt = strt + 1
+        end = end + 1
 
-#EMA
-ema = ((acp - sma) * multi) + sma
-print(ema)
+    emadatedic = {}
+    for i in emalist:
+        emadate = dates[i]
+        emadatedic[emadate] = emalist[i]
+        
+
+
 
 
 
