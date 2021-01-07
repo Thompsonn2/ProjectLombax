@@ -3,7 +3,7 @@ import pandas_datareader as web
 import pandas as pd
 import datetime
 
-def getEMA(csv_name):
+def getEMA(csv_name, length):
 
     pricedata = pd.read_csv(csv_name)
 
@@ -19,20 +19,18 @@ def getEMA(csv_name):
     #print(dates)
 
     strt = 0
-    end = 12
+    end = length
     emalist = []
 
     #len(acprices)
     while end <= len(acprices):
 
-        #12 Day EMA
-
-        emalng = 12
+        emalng = length
         acptotal = 0
 
-        #12 Day SMA (intial EMA)
+        #SMA (intial EMA)
         for i in range(strt, end):
-           acptotal = acprices[i] + acptotal
+            acptotal = acprices[i] + acptotal
 
         sma = acptotal / emalng
 
@@ -49,7 +47,7 @@ def getEMA(csv_name):
         elif strt > 0:
             prevema = emalist[-1]
             ema = ((acp - prevema) * multi) + prevema
-            #print("12 day Sum: ", acptotal)
+            #print("26 day Sum: ", acptotal)
             #print("Multiplier: ", multi)
             #print("Adj Close: ", acp)
             #print("Previous EMA: ", prevema)
@@ -58,11 +56,9 @@ def getEMA(csv_name):
         emalist.append(ema)
         strt = strt + 1
         end = end + 1
+    
+    return(emalist)
 
-    emadatedic = {}
-    for i in emalist:
-        emadate = dates[i]
-        emadatedic[emadate] = emalist[i]
         
 
 

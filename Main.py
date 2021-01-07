@@ -18,4 +18,10 @@ csv_name = ticker + '.csv'
 
 test.to_csv(csv_name)
 
-getEMA(csv_name)
+emalist12d = getEMA(csv_name, 12)
+emalist26d = getEMA(csv_name, 26)
+signallist = getEMA(csv_name, 9)
+
+print(len(emalist12d))
+print(len(emalist26d))
+print(len(signallist))
