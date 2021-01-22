@@ -1,71 +1,47 @@
-#Method to calculate EMA
 import pandas_datareader as web
 import pandas as pd
 import datetime
 
-def getEMA(csv_name, length):
+def getEMA(length, csv_name, ticker):
 
     pricedata = pd.read_csv(csv_name)
 
-    acprices = pricedata.loc[:,'adjusted close']
-    dates = pricedata.loc[:, 'Unnamed: 0']
-    #print(acprices)
-    #print(dates)
-    
-
+    acprices = pricedata.loc[:, 'adjusted close']
     acprices = acprices.to_list()
-    dates = dates.to_list()
-    #print(acprices)
-    #print(dates)
 
-    strt = 0
-    end = length
-    emalist = []
+    back = len(acprices) - 1
+    front = back - length
 
-    #len(acprices)
-    while end <= len(acprices):
+    acptotal = 0
 
-        emalng = length
-        acptotal = 0
+    for i in range(back, front, -1):
+        acptotal = acprices[i] + acptotal
+    #print(acptotal, "\t", i)
 
-        #SMA (intial EMA)
-        for i in range(strt, end):
-            acptotal = acprices[i] + acptotal
+    #Previous EMA
+        #(Call getPrevEMA Function)
+    prevEMA = getPrevEMA(length, ticker)
 
-        sma = acptotal / emalng
+    #Multiplier
+    multi = 2 / (acptotal + 1)
 
-        #Multiplier
-        multi = 2 / (acptotal + 1)
+    #Closing Price
+    acp = acprices[back]
 
-        #Closing Price
-        acp = acprices[end - 1]
+    #EMA
+    ema = ((acp - prevEMA) * multi) + prevEMA
+    return(ema)
 
-        #EMA
-        if strt == 0:
-            ema = ((acp - sma) * multi) + sma
-            #print(ema, "\t\t", strt, end)
-        elif strt > 0:
-            prevema = emalist[-1]
-            ema = ((acp - prevema) * multi) + prevema
-            #print("26 day Sum: ", acptotal)
-            #print("Multiplier: ", multi)
-            #print("Adj Close: ", acp)
-            #print("Previous EMA: ", prevema)
-            #print(ema, "\t\t", strt, end)
+def getPrevEMA(length, ticker):
 
-        emalist.append(ema)
-        strt = strt + 1
-        end = end + 1
+    emacsv_name = ticker + 'EMA.csv'
+    EMAdata = pd.read_csv(emacsv_name)
+
+    dl = str(length) + ' DAY'
+    prevEMAlist = EMAdata.loc[:, dl]
+    #print(prevEMAlist)
     
-    return(emalist)
+    end = len(prevEMAlist) - 1
 
-        
-
-
-
-
-
-
-
-
-
+    pEMA = prevEMAlist[end]
+    return(pEMA)
