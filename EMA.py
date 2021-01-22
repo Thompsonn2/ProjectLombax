@@ -16,22 +16,26 @@ def getEMA(length, csv_name, ticker):
 
     for i in range(back, front, -1):
         acptotal = acprices[i] + acptotal
-    #print(acptotal, "\t", i)
+        #print(acptotal, "\t", i)
 
     #Previous EMA
         #(Call getPrevEMA Function)
     prevEMA = getPrevEMA(length, ticker)
+    #print(prevEMA)
 
     #Multiplier
     multi = 2 / (acptotal + 1)
+    #print(multi)
 
     #Closing Price
     acp = acprices[back]
+    #print(acp)
 
     #EMA
     ema = ((acp - prevEMA) * multi) + prevEMA
+    #print(ema)
     return(ema)
-
+    
 def getPrevEMA(length, ticker):
 
     emacsv_name = ticker + 'EMA.csv'
