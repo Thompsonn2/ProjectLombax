@@ -7,6 +7,7 @@ from csv import writer
 
 from EMA import *
 from Order import *
+from MACDEMA import *
 
 today = date.today()
 #print("Todays date is:", today)
@@ -24,28 +25,26 @@ test.to_csv(csv_name)
 
 ema26 = getEMA(26, csv_name, ticker)
 ema12 = getEMA(12, csv_name, ticker)
+macd9 = getMACDEMA()
 print(ema26, ema12)
 
 #Read previous EMA from csv file
 #Write current date and EMAs to csv file
-pema26 = getPrevEMA(26, ticker)
-pema12 = getPrevEMA(12, ticker)
-
 emacsv_name = ticker + 'EMA.csv'
-new_row = [today, ema26, ema12]
+new_row = [today, ema26, ema12, macd9]
 with open(emacsv_name, 'a') as f_object:
         writer_object = writer(f_object)
         writer_object.writerow(new_row)
         f_object.close()
 
 macd = ema12 - ema26
-signalline = 0 #9 day EMA of macd
+signalline = macd9 #9 day EMA of macd
 print(macd, signalline)
 bos = 0 #alpaca
 
 #Buy sell or hold # of shares based on algo
 
-equity = getCapital()
+equity = float(getCapital())
 pricedata = pd.read_csv(csv_name)
 acprices = pricedata.loc[:, 'adjusted close']
 back = len(acprices) - 1
